@@ -20,7 +20,7 @@ public class DataSystem {
     private static final DataSystem instance = new DataSystem();
     private Owner turn;
     private IntegerProperty scorePlayer1,scorePlayer2,scoreTies;
-    public ObjectProperty<Owner>[][] board = new ObjectProperty[3][3];
+    public ObjectProperty<BoardPiece>[][] board = new ObjectProperty[3][3];
 
     private DataSystem(){
         turn = Owner.Player1;
@@ -55,8 +55,8 @@ public class DataSystem {
 
     public boolean claim(int x,int y){
         if(x>3||y>3) return false;
-        if(board[x][y].get().equals(Owner.Unowned)){
-            board[x][y].set(turn);
+        if(board[x][y].get().getOwner().equals(Owner.Unowned)){
+            board[x][y].get().setOwner(turn);
             return true;
         }
         return false;
@@ -66,6 +66,8 @@ public class DataSystem {
         scorePlayer1.set(0);
         scorePlayer2.set(0);
         scoreTies.set(0);
+        turn = Owner.Player1;
+        restartBoard();
     }
     public void increaseScorePlayer1(){
         scorePlayer1.set(scorePlayer1.get()+1);
@@ -78,61 +80,113 @@ public class DataSystem {
     }
 
     public void restartBoard(){
+
         for(int i = 0;i<3;i++){
             for (int j = 0; j < 3; j++) {
-                board[i][j].set(Owner.Unowned);
+                board[i][j].get().setOwner(Owner.Unowned);
             }
         }
+        dehighlighAll();
     }
 
-    public int checkForEnd(){
+    public boolean checkForEnd(){
         boolean noend = false;
         for (int i = 0; i < 3; i++) {
             switch (checkRow(i)){
                 case PLAYER1WIN:
-                    return PLAYER1WIN;
+                    increaseScorePlayer1();
+                    highlightRow(i);
+                    return true;
                 case PLAYER2WIN:
-                    return PLAYER2WIN;
+                    highlightRow(i);
+                    increaseScorePlayer2();
+                    return true;
                 case NOEND:
                     noend=true;
             }
             switch (checkColumn(i)){
                 case PLAYER1WIN:
-                    return PLAYER1WIN;
+                    increaseScorePlayer1();
+                    highlightColumn(i);
+                    return true;
                 case PLAYER2WIN:
-                    return PLAYER2WIN;
+                    highlightColumn(i);
+                    increaseScorePlayer2();
+                    return true;
                 case NOEND:
                     noend=true;
             }
         }
         switch (checkDiagnoal1()){
             case PLAYER1WIN:
-                return PLAYER1WIN;
+                increaseScorePlayer1();
+                highlightDiagonal1();
+                return true;
             case PLAYER2WIN:
-                return PLAYER2WIN;
+                increaseScorePlayer2();
+                highlightDiagonal1();
+                return true;
             case NOEND:
                 noend=true;
         }
         switch (checkDiagonal2()){
             case PLAYER1WIN:
-                return PLAYER1WIN;
+                increaseScorePlayer1();
+                highlightDiagonal2();
+                return true;
             case PLAYER2WIN:
-                return PLAYER2WIN;
+                increaseScorePlayer2();
+                highlightDiagonal2();
+                return true;
             case NOEND:
                 noend=true;
         }
-        if(noend) return NOEND;
-        else return TIE;
+        if(noend) return false;
+        else {
+            increaseScoreTies();
+            return true;
+        }
+    }
+
+    private void highlightRow(int row){
+        highlightCell(row,0);
+        highlightCell(row,1);
+        highlightCell(row,2);
+    }
+    private void highlightColumn(int column){
+        highlightCell(0,column);
+        highlightCell(1,column);
+        highlightCell(2,column);
+    }
+    private void highlightDiagonal1(){
+        highlightCell(0,0);
+        highlightCell(1,1);
+        highlightCell(2,2);
+    }
+    private void highlightDiagonal2(){
+        highlightCell(2,0);
+        highlightCell(1,1);
+        highlightCell(0,2);
+    }
+    private void highlightCell(int x, int y){
+        board[x][y].get().setHighlight(true);
+    }
+    public void dehighlighAll(){
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                board[i][j].get().setHighlight(false);
+            }
+        }
     }
 
     private int checkRow(int row){
         int returnValue = -1;
         Owner owner = null;
         for(int i = 0;i<3;i++){
-            if(board[row][i].get().equals(Owner.Unowned)) return NOEND;
-            if(owner == null) owner = board[row][i].get();
+            if(board[row][i].get().getOwner().equals(Owner.Unowned)) return NOEND;
+            if(owner == null) owner = board[row][i].get().getOwner();
             else {
-                if(!board[row][i].get().equals(owner)){
+                if(!board[row][i].get().getOwner().equals(owner)){
                     returnValue = TIE;
                 }
             }
@@ -149,10 +203,10 @@ public class DataSystem {
         int returnValue = -1;
         Owner owner = null;
         for(int i = 0;i<3;i++){
-            if(board[i][column].get().equals(Owner.Unowned)) return NOEND;
-            if(owner == null) owner = board[i][column].get();
+            if(board[i][column].get().getOwner().equals(Owner.Unowned)) return NOEND;
+            if(owner == null) owner = board[i][column].get().getOwner();
             else {
-                if(!board[i][column].get().equals(owner)){
+                if(!board[i][column].get().getOwner().equals(owner)){
                     returnValue = TIE;
                 }
             }
@@ -168,10 +222,10 @@ public class DataSystem {
         int returnValue = -1;
         Owner owner = null;
         for(int i = 0;i<3;i++){
-            if(board[i][i].get().equals(Owner.Unowned)) return NOEND;
-            if(owner == null) owner = board[i][i].get();
+            if(board[i][i].get().getOwner().equals(Owner.Unowned)) return NOEND;
+            if(owner == null) owner = board[i][i].get().getOwner();
             else {
-                if(!board[i][i].get().equals(owner)){
+                if(!board[i][i].get().getOwner().equals(owner)){
                     returnValue = TIE;
                 }
             }
@@ -188,10 +242,10 @@ public class DataSystem {
         int returnValue = -1;
         Owner owner = null;
         for(int i = 0;i<3;i++){
-            if(board[i][2-i].get().equals(Owner.Unowned)) return NOEND;
-            if(owner == null) owner = board[i][2-i].get();
+            if(board[i][2-i].get().getOwner().equals(Owner.Unowned)) return NOEND;
+            if(owner == null) owner = board[i][2-i].get().getOwner();
             else {
-                if(!board[i][2-i].get().equals(owner)){
+                if(!board[i][2-i].get().getOwner().equals(owner)){
                     returnValue = TIE;
                 }
             }
@@ -207,7 +261,7 @@ public class DataSystem {
     private void initBoard(){
         for(int i = 0;i<3;i++){
             for (int j = 0; j < 3; j++) {
-                board[i][j] = new SimpleObjectProperty<>(Owner.Unowned);
+                board[i][j] = new SimpleObjectProperty<>(new BoardPiece(i,j));
             }
         }
     }

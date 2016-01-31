@@ -76,8 +76,18 @@
             </FlowPane>
             <VBox alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0" HBox.hgrow="NEVER">
                <children>
-                  <Button fx:id="playerChange" mnemonicParsing="false" onAction="#onPlayerChange" prefWidth="150.0" text="2 Player" />
-                  <Button mnemonicParsing="false" onAction="#onReset" prefWidth="150.0" text="Reset" />
+                  <ChoiceBox id="PlayerChoice" fx:id="playerChoice" maxHeight="1.7976931348623157E308" prefWidth="150.0" VBox.vgrow="ALWAYS">
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </ChoiceBox>
+                  <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" onAction="#onReset" prefWidth="150.0" text="Reset" VBox.vgrow="ALWAYS">
+                     <VBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" />
+                     </VBox.margin>
+                     <font>
+                        <Font size="20.0" />
+                     </font></Button>
                </children>
                <padding>
                   <Insets right="10.0" />

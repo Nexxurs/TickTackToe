@@ -1,7 +1,9 @@
 package main;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
@@ -13,23 +15,29 @@ import javafx.scene.text.Font;
  */
 public class BoardPiece extends StackPane {
     private ObjectProperty<Owner> ownerProperty = new SimpleObjectProperty<>(Owner.Unowned);
+    private BooleanProperty highlight = new SimpleBooleanProperty(false);
     private Label label;
     private int x,y;
 
     public BoardPiece(int x,int y){
-        super();
-        label = new Label();
-        label.textProperty().bind(Bindings.select(ownerProperty,"Symbol"));
-        label.setFont(Font.font(50));
-        this.getChildren().add(label);
-        this.x =x;
-        this.y=y;
+        this(Owner.Unowned,x,y);
     }
 
     public BoardPiece(Owner owner,int x, int y) {
-        this(x,y);
-        this.ownerProperty = new SimpleObjectProperty<>(owner);
+        super();
+        label = new Label();
+        label.setText("T");
+        label.textProperty().bind(Bindings.select(ownerProperty,"Symbol"));
+        label.setFont(Font.font(50));
+        label.styleProperty().bind(Bindings.when(highlight).then("-fx-text-fill: red").otherwise(""));
+        this.getChildren().add(label);
+        this.x =x;
+        this.y=y;
 
+    }
+
+    public void setHighlight(boolean highlight) {
+        this.highlight.set(highlight);
     }
 
     public Owner getOwner() {
@@ -40,7 +48,7 @@ public class BoardPiece extends StackPane {
         return ownerProperty;
     }
 
-    private void setOwner(Owner owner){
+    public void setOwner(Owner owner){
         ownerProperty.set(owner);
     }
 
