@@ -14,7 +14,6 @@ public class easyNPC implements NPC {
         while(true){
             int x = rnd.nextInt(3);
             int y = rnd.nextInt(3);
-            System.out.println(y+", "+x);
             if(data.claim(x,y)) return;
         }
     }

@@ -46,7 +46,7 @@ public class Controller implements Initializable{
 
         for(int i =0;i<3;i++){
             for(int j =0;j<3;j++){
-                BoardPiece piece = data.board[i][j].get();
+                BoardPiece piece = data.board[i][j];
                 //piece.ownerProperty().bind(data.board[i][j].get().ownerProperty());
                 piece.setOnMouseClicked(this::onMouseClicked);
                 gameGrid.add(piece,i,j);
@@ -63,7 +63,6 @@ public class Controller implements Initializable{
     private void onPlayerChoiceAction(Event event){
         String selectedString = ((ChoiceBox<String>)((ActionEvent)event).getSource()).getSelectionModel().getSelectedItem();
         npc = getNPCfromString(selectedString);
-        System.out.println(npc);
     }
 
     private void onMouseClicked(MouseEvent me){

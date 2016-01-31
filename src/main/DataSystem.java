@@ -20,7 +20,7 @@ public class DataSystem {
     private static final DataSystem instance = new DataSystem();
     private Owner turn;
     private IntegerProperty scorePlayer1,scorePlayer2,scoreTies;
-    public ObjectProperty<BoardPiece>[][] board = new ObjectProperty[3][3];
+    public BoardPiece[][] board = new BoardPiece[3][3];
 
     private DataSystem(){
         turn = Owner.Player1;
@@ -48,15 +48,14 @@ public class DataSystem {
     }
 
     public Owner changeTurn(){
-        if(turn==Owner.Player1) turn = Owner.Player2;
-        else turn = Owner.Player1;
+        turn = turn.getOpponent();
         return turn;
     }
 
     public boolean claim(int x,int y){
         if(x>3||y>3) return false;
-        if(board[x][y].get().getOwner().equals(Owner.Unowned)){
-            board[x][y].get().setOwner(turn);
+        if(board[x][y].getOwner().equals(Owner.Unowned)){
+            board[x][y].setOwner(turn);
             return true;
         }
         return false;
@@ -79,14 +78,26 @@ public class DataSystem {
         scoreTies.set(scoreTies.get()+1);
     }
 
+    public Owner getTurn(){
+        return turn;
+    }
+
     public void restartBoard(){
 
         for(int i = 0;i<3;i++){
             for (int j = 0; j < 3; j++) {
-                board[i][j].get().setOwner(Owner.Unowned);
+                board[i][j].setOwner(Owner.Unowned);
             }
         }
         dehighlighAll();
+    }
+
+    public void dehighlighAll(){
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                board[i][j].setHighlight(false);
+            }
+        }
     }
 
     public boolean checkForEnd(){
@@ -169,24 +180,17 @@ public class DataSystem {
         highlightCell(0,2);
     }
     private void highlightCell(int x, int y){
-        board[x][y].get().setHighlight(true);
-    }
-    public void dehighlighAll(){
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                board[i][j].get().setHighlight(false);
-            }
-        }
+        board[x][y].setHighlight(true);
     }
 
     private int checkRow(int row){
         int returnValue = -1;
         Owner owner = null;
         for(int i = 0;i<3;i++){
-            if(board[row][i].get().getOwner().equals(Owner.Unowned)) return NOEND;
-            if(owner == null) owner = board[row][i].get().getOwner();
+            if(board[row][i].getOwner().equals(Owner.Unowned)) return NOEND;
+            if(owner == null) owner = board[row][i].getOwner();
             else {
-                if(!board[row][i].get().getOwner().equals(owner)){
+                if(!board[row][i].getOwner().equals(owner)){
                     returnValue = TIE;
                 }
             }
@@ -203,10 +207,10 @@ public class DataSystem {
         int returnValue = -1;
         Owner owner = null;
         for(int i = 0;i<3;i++){
-            if(board[i][column].get().getOwner().equals(Owner.Unowned)) return NOEND;
-            if(owner == null) owner = board[i][column].get().getOwner();
+            if(board[i][column].getOwner().equals(Owner.Unowned)) return NOEND;
+            if(owner == null) owner = board[i][column].getOwner();
             else {
-                if(!board[i][column].get().getOwner().equals(owner)){
+                if(!board[i][column].getOwner().equals(owner)){
                     returnValue = TIE;
                 }
             }
@@ -222,10 +226,10 @@ public class DataSystem {
         int returnValue = -1;
         Owner owner = null;
         for(int i = 0;i<3;i++){
-            if(board[i][i].get().getOwner().equals(Owner.Unowned)) return NOEND;
-            if(owner == null) owner = board[i][i].get().getOwner();
+            if(board[i][i].getOwner().equals(Owner.Unowned)) return NOEND;
+            if(owner == null) owner = board[i][i].getOwner();
             else {
-                if(!board[i][i].get().getOwner().equals(owner)){
+                if(!board[i][i].getOwner().equals(owner)){
                     returnValue = TIE;
                 }
             }
@@ -242,10 +246,10 @@ public class DataSystem {
         int returnValue = -1;
         Owner owner = null;
         for(int i = 0;i<3;i++){
-            if(board[i][2-i].get().getOwner().equals(Owner.Unowned)) return NOEND;
-            if(owner == null) owner = board[i][2-i].get().getOwner();
+            if(board[i][2-i].getOwner().equals(Owner.Unowned)) return NOEND;
+            if(owner == null) owner = board[i][2-i].getOwner();
             else {
-                if(!board[i][2-i].get().getOwner().equals(owner)){
+                if(!board[i][2-i].getOwner().equals(owner)){
                     returnValue = TIE;
                 }
             }
@@ -261,7 +265,7 @@ public class DataSystem {
     private void initBoard(){
         for(int i = 0;i<3;i++){
             for (int j = 0; j < 3; j++) {
-                board[i][j] = new SimpleObjectProperty<>(new BoardPiece(i,j));
+                board[i][j] = new BoardPiece(i,j);
             }
         }
     }

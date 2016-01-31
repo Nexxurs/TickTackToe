@@ -16,4 +16,9 @@ public enum Owner {
     public String getSymbol() {
         return symbol;
     }
+    public Owner getOpponent(){
+        if(this.equals(Player1)) return Player2;
+        else if(this.equals(Player2)) return Player1;
+        else return null;
+    }
 }
