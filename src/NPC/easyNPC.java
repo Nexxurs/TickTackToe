@@ -1,5 +1,7 @@
 package NPC;
 
+import main.BoardPiece;
+import main.Coordinate;
 import main.DataSystem;
 import java.util.Random;
 
@@ -8,13 +10,14 @@ import java.util.Random;
  */
 public class easyNPC implements NPC {
     @Override
-    public void nextTurn() {
+    public Coordinate nextTurn(BoardPiece[][] board) {
         DataSystem data = DataSystem.getInstance();
         Random rnd = new Random();
         while(true){
             int x = rnd.nextInt(3);
             int y = rnd.nextInt(3);
-            if(data.claim(x,y)) return;
+            Coordinate currCoordinate = new Coordinate(x,y);
+            if(data.claimable(currCoordinate)) return currCoordinate;
         }
     }
 

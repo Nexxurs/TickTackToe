@@ -16,7 +16,7 @@ import NPC.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class Controller implements Initializable{
+public class GuiController implements Initializable{
     @FXML
     private Label player1_name, player2_name, player1_score, player2_score, ties_score;
     @FXML
@@ -25,7 +25,7 @@ public class Controller implements Initializable{
     private GridPane gameGrid;
 
     private DataSystem data;
-    private boolean end = false;
+    private int end = BoardController.NOEND;
     private NPC npc;
     public void initialize(URL url, ResourceBundle rb){
         data = DataSystem.getInstance();
@@ -62,19 +62,18 @@ public class Controller implements Initializable{
 
     private void onPlayerChoiceAction(Event event){
         String selectedString = ((ChoiceBox<String>)((ActionEvent)event).getSource()).getSelectionModel().getSelectedItem();
-        npc = getNPCfromString(selectedString);
+        Owner.Player2.setNPC(getNPCfromString(selectedString));
     }
 
     private void onMouseClicked(MouseEvent me){
-        if(!end){
+        if(end==BoardController.NOEND){
             BoardPiece piece = (BoardPiece) me.getSource();
-            if(data.claim(piece.getX(),piece.getY())) {
+            if(data.claim(piece.getCoordinate())) {
                 end = data.checkForEnd();
-                if(!end) {
+                if(end==BoardController.NOEND) {
                     data.changeTurn();
-                    if (npc != null) {
-                        npc.nextTurn();
-                        data.changeTurn();
+
+                    if(data.npcTurn()){
                         end = data.checkForEnd();
                     }
                 }
@@ -82,7 +81,18 @@ public class Controller implements Initializable{
             }
         }
         else {
-            end = false;
+            switch (end){
+                case BoardController.PLAYER1WIN:
+                    data.increaseScorePlayer1();
+                    break;
+                case BoardController.PLAYER2WIN:
+                    data.increaseScorePlayer2();
+                    break;
+                case BoardController.TIE:
+                    data.increaseScoreTies();
+                    break;
+            }
+            end = BoardController.NOEND;
             data.restartBoard();
         }
     }
